@@ -1,0 +1,28 @@
+<resources>
+    <string name="app_name">SMS_MD</string>
+    <string name="open">open</string>
+    <string name="close">close</string>
+    <string name="toolbar_title">短信助手</string>
+    <string name="SMS_forwarding_model">短信自动转发功能模块：</string>
+    <string name="SMS_Input">想转发谁的短信</string>
+    <string name="SMS_Output">想要发给谁</string>
+    <string name="Is_number_of_firm">是否为企业号码</string>
+    <string name="AlL_number">转发所有短信</string>
+    <string name="start_service">开始服务</string>
+    <string name="stop_service">停止服务</string>
+    <string name="extra">——服务来自短信助手</string>
+    <string name="tip">为了提供更好的服务，请不要结束应用</string>
+    <string name="exit">退出</string>
+    <string name="error1">号码格式错误</string>
+    <string name="error2">企业号码请勾选</string>
+    <string name="error3">请输入号码</string>
+    <string name="error4">不可以输入相同的码号</string>
+    <string name="setting">设置</string>
+    <string name="about">关于</string>
+    <string name="configuration">配置</string>
+    <string name="finish">完成</string>
+    <string name="from">转发自：+</string>
+    <string name="body">内容为：</string>
+    <string name="to">转发给：</string>
+    <string name="clear_all_data">清除记录</string>
+</resources>
