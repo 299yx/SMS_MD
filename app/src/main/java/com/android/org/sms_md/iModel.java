@@ -16,8 +16,13 @@ public interface iModel {
 
     String getConfiguration_String(String string);
 
+    String get_preference_configuration_string(String key);
+
 //设置启动服务需要的配置信息
     void set_service_configuration(String Listen, boolean ListenFirm , String Forwarding, boolean ForwardingFirm, long StartTime, boolean AllListen);
+
+//   设置自动回复功能需要的配置信息
+    void set_reply_service_configuration(long startTime);
 
 //    获得所有的数据库数据
     List<javabean> getAllData();

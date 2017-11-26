@@ -12,7 +12,6 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.telephony.SmsManager;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.android.org.sms_md.R;
@@ -26,6 +25,7 @@ import com.android.org.sms_md.tool.*;
 public class ListenService extends Service implements iPresenterService {
 
     private ModelService modelService;
+    private ListenService.SmsObService smsObService;
 
     String TAG = "测试";
 
@@ -47,6 +47,7 @@ public class ListenService extends Service implements iPresenterService {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        getContentResolver().unregisterContentObserver(smsObService);
         Toast.makeText(this,"自动转发服务已停止",Toast.LENGTH_SHORT).show();
     }
 
@@ -58,7 +59,8 @@ public class ListenService extends Service implements iPresenterService {
 
     @Override
     public void core() {
-        getContentResolver().registerContentObserver(Uri.parse("content://sms"),true,new SmsObService(new Handler()));
+        smsObService = new SmsObService(new Handler());
+        getContentResolver().registerContentObserver(Uri.parse("content://sms"),true,smsObService);
     }
 //用于判断是不是企业码，不是的话加+86
     public String work_num(String num){

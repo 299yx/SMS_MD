@@ -14,10 +14,16 @@
             android:summaryOff="关闭"
             android:defaultValue="false"/>
     </PreferenceCategory>
+    <PreferenceCategory android:title="自动回复的内容">
+        <EditTextPreference
+            android:key="autoReply"
+            android:title="点击设置"
+            android:defaultValue="已收到，谢谢"/>
+    </PreferenceCategory>
     <PreferenceCategory android:title="关于">
         <Preference
             android:key="version"
             android:title="版本信息"
-            android:summary="1.0.0"/>
+            android:summary="1.0.1"/>
     </PreferenceCategory>
 </PreferenceScreen>

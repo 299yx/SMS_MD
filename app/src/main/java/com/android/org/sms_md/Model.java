@@ -48,6 +48,12 @@ public class Model implements iModel {
     }
 
     @Override
+    public String get_preference_configuration_string(String key) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(Name.PREFERENCE, Context.MODE_PRIVATE);
+        return sharedPreferences.getString(key,null);
+    }
+
+    @Override
     public void set_service_configuration(String Listen, boolean ListenFirm, String Forwarding, boolean ForwardingFirm, long StartTime, boolean AllListen) {
         SharedPreferences sharedPreferences = context.getSharedPreferences(Name.SERVICE_CONFI,Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -58,6 +64,12 @@ public class Model implements iModel {
         editor.putLong(Name.StartTime,StartTime);
         editor.putBoolean(Name.AllListen,AllListen);
         editor.apply();
+    }
+
+    @Override
+    public void set_reply_service_configuration(long startTime) {
+        SharedPreferences.Editor editor = context.getSharedPreferences(Name.SERVICE_REPLY_CONFI,Context.MODE_PRIVATE).edit();
+        editor.putLong(Name.REPLY_START_TIME,startTime).apply();
     }
 
     @Override

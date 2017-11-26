@@ -17,6 +17,8 @@ public interface iPresenter {
 
     void setCheckBox3(boolean bool);//设置CheckBox2
 
+    void setReplySwitch(boolean bool);//设置ReplySwitch
+
     /**
      * 启动服务的核心服务
      * @param Listen        要转发的号码
@@ -35,6 +37,16 @@ public interface iPresenter {
      */
     void intent_service_stop();
 
+    /*
+    开始自动回复服务
+     */
+    void intent_reply_start();
+
+    /*
+    停止自动回复服务
+     */
+    void intent_reply_stop();
+
 //    判断输入Listen号码是都符合规范
     boolean judge_Listen(String L);
 //    判断输入Forwarding码号是否符合规范
@@ -42,6 +54,9 @@ public interface iPresenter {
 
 //    获得本机号码
     String getSelfNumber();
+
+//    获得Configuration的值
+    String getConfiguration(String key);
 
 //    处理菜单about
     void about();

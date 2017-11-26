@@ -1,7 +1,10 @@
 package com.android.org.sms_md;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
@@ -24,8 +27,6 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -36,9 +37,11 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.org.sms_md.db_helper.Name;
 import com.android.org.sms_md.tool.*;
 
 import com.android.org.sms_md.other_activity.configuration;
@@ -66,6 +69,8 @@ public class MainActivity extends AppCompatActivity implements iView{
     List<View> views = new ArrayList<>();
     String[] titles;
 //主View的变量
+    Switch replySwitch;//是否开启自动回复功能
+    TextView replyTextView;//自动回复的显示TextView
     CheckBox checkBox1;//是否为企业号码1
     CheckBox checkBox2;//是否是全部的复选框
     CheckBox checkBox3;//是否为企业号码2
@@ -86,10 +91,12 @@ public class MainActivity extends AppCompatActivity implements iView{
     TextView textView;//selfName
     NavigationView navigationView;//配置布局
 
+    @SuppressLint("HandlerLeak")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+        first_use();
         presenter = new Presenter(this,getApplicationContext());
 //        初始化一些变量
         inflater = getLayoutInflater();
@@ -164,12 +171,25 @@ public class MainActivity extends AppCompatActivity implements iView{
         before_start();
     }
 
+    //用于第一次使用该软件方法
+    private void first_use(){
+        SharedPreferences sharedPreferences = getSharedPreferences(Name.CONFI, Context.MODE_PRIVATE);
+        if (sharedPreferences.getBoolean(Name.FIRST_USE,true)){
+            SharedPreferences.Editor editor = getSharedPreferences(Name.CONFI,Context.MODE_PRIVATE).edit();
+            editor.putBoolean(Name.FIRST_USE,false).apply();
+//            以下为第一次使用该软件的时的发生的事件
+            SharedPreferences.Editor editor1 = getSharedPreferences(Name.PREFERENCE,Context.MODE_PRIVATE).edit();
+            editor1.putString(Name.Reply,"已收到").apply();
+        }
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
         presenter.setCheckBox1();
         presenter.setCheckBox2();
         presenter.setCheckBox3();
+        presenter.setReplySwitch();
     }
 
     @Override
@@ -275,6 +295,28 @@ public class MainActivity extends AppCompatActivity implements iView{
                 }
                 }
         });
+        replyTextView = view1.findViewById(R.id.Reply);
+        replySwitch = view1.findViewById(R.id.autoReply);
+        replySwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b){
+                    if(!presenter.getReplyState()){
+                        before_reply_service();
+                    }
+                }else{
+                    presenter.setReplySwitch(false);
+                    replyTextView.setText(R.string.yi_textView_show);
+                    presenter.intent_reply_stop();
+
+
+                }
+            }
+        });
+        if (presenter.getReplySwitch()){
+            replySwitch.setChecked(true);
+            replyTextView.setText(R.string.yi_textView_show1);
+        }
 //        实例化view2控件****************
         swipeRefreshLayout = view2.findViewById(R.id.swipeRefreshLayout);
         recyclerView = view2.findViewById(R.id.RecyclerView);
@@ -330,7 +372,28 @@ public class MainActivity extends AppCompatActivity implements iView{
 
     }
 
+//以下放置对话框*************************************
 
+//点击开始自动回复后，确认是否开始和确认自动回复的内容
+    protected void before_reply_service(){
+        String s = "自动回复的内容为：\n"+presenter.getConfiguration(Name.Reply)+"（在设置中修改）";
+        AlertDialog.Builder builder = new AlertDialog.Builder(this)
+                .setMessage(s).setNegativeButton("前往修改", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        replySwitch.setChecked(false);
+                        startActivity( new Intent(MainActivity.this,configuration.class));
+                    }
+                }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        presenter.intent_reply_start();
+                        presenter.setReplySwitch(true);
+                        replyTextView.setText(R.string.yi_textView_show1);
+                    }
+                });
+        builder.create().show();
+    }
     //    在开始之前提示服务正在运行中
     protected void before_start(){
         if (presenter.getServiceStatus()){
@@ -353,6 +416,7 @@ public class MainActivity extends AppCompatActivity implements iView{
                 });
         builder.create().show();
     }
+//**********************************************************
 
 //    菜单关于
     public void about(){

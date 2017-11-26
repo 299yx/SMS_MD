@@ -25,4 +25,7 @@
     <string name="body">内容为：</string>
     <string name="to">转发给：</string>
     <string name="clear_all_data">清除记录</string>
+    <string name="autoReply">自动回复功能模块：</string>
+    <string name="yi_textView_show">已停用该功能</string>
+    <string name="yi_textView_show1">已启用该功能</string>
 </resources>

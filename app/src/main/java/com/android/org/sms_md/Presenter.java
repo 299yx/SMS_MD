@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.telephony.TelephonyManager;
+
+import com.android.org.sms_md.core_function_2.ReplyService;
 import com.android.org.sms_md.db_helper.*;
 import com.android.org.sms_md.core_functions.ListenService;
 import com.android.org.sms_md.javabean.javabean;
@@ -25,7 +27,16 @@ public class Presenter implements iPresenter {
     private boolean checkBox2 = false;     //是否转发全部
     private boolean checkBox3 = false;      //是否是企业号码_2
     private boolean serviceStatus = false;  //开始键的状态
+    private boolean replySwitch = false;    //自动监听的状态
     //***get和set****
+    public boolean getReplySwitch() {
+        return replySwitch;
+    }
+
+    public void setReplySwitch() {
+        model.setConfiguration_Boolean(Name.REPLY_SWITCH,replySwitch);
+    }
+
     public void setCheckBox1(){
         model.setConfiguration_Boolean(Name.CHECK_FIRM1,checkBox1);
     }
@@ -59,6 +70,10 @@ public class Presenter implements iPresenter {
     public String getForwarding(){
         return model.getConfiguration_String(Name.Forwarding);
     }
+
+    public boolean getReplyState(){
+        return model.getConfiguration_Boolean(Name.REPLY_START);
+    }
     //**************
 
 
@@ -70,6 +85,7 @@ public class Presenter implements iPresenter {
         checkBox1 = model.getConfiguration_Boolean(Name.CHECK_FIRM1);
         checkBox2 = model.getConfiguration_Boolean(Name.CHECK2_ALL);
         checkBox3 = model.getConfiguration_Boolean(Name.CHECK_FIRM2);
+        replySwitch = model.getConfiguration_Boolean(Name.REPLY_SWITCH);
         serviceStatus = model.getConfiguration_Boolean(Name.ServiceSTATUS);
     }
 
@@ -96,6 +112,11 @@ public class Presenter implements iPresenter {
     }
 
     @Override
+    public void setReplySwitch(boolean bool) {
+        replySwitch = bool;
+    }
+
+    @Override
     public void intent_service(String Listen,boolean ListenFirm ,String Forwarding,boolean ForwardingFirm,long StartTime,boolean AllListen) {
         Intent intent = new Intent(context,ListenService.class);
         model.set_service_configuration(Listen,ListenFirm,Forwarding,ForwardingFirm,StartTime,AllListen);
@@ -115,6 +136,20 @@ public class Presenter implements iPresenter {
         serviceStatus = false;
         setServiceStatus();
         Intent intent = new Intent(context,ListenService.class);
+        context.stopService(intent);
+    }
+
+    @Override
+    public void intent_reply_start() {
+        model.setConfiguration_Boolean(Name.REPLY_START,true);
+        model.set_reply_service_configuration(System.currentTimeMillis());
+        context.startService(new Intent(context,ReplyService.class));
+    }
+
+    @Override
+    public void intent_reply_stop() {
+        model.setConfiguration_Boolean(Name.REPLY_START,false);
+        Intent intent = new Intent(context,ReplyService.class);
         context.stopService(intent);
     }
 
@@ -178,6 +213,11 @@ public class Presenter implements iPresenter {
         TelephonyManager mTelephonyMgr = (TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE);
         return mTelephonyMgr.getDeviceId();
 
+    }
+
+    @Override
+    public String getConfiguration(String key) {
+        return model.get_preference_configuration_string(key);
     }
 
     @Override
