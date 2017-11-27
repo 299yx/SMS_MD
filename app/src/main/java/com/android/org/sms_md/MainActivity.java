@@ -132,7 +132,12 @@ public class MainActivity extends AppCompatActivity implements iView{
         imageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                finish();
+                if(presenter.getReplyState()||presenter.getServiceStatus()){
+                    drawerLayout.closeDrawers();
+                    Toast.makeText(getApplicationContext(),"请先停止正在运行的服务，避免发生异常",Toast.LENGTH_LONG).show();
+                }else{
+                    finish();
+                }
             }
         });
         textView = (TextView)findViewById(R.id.self_number);
@@ -392,11 +397,13 @@ public class MainActivity extends AppCompatActivity implements iView{
                         replyTextView.setText(R.string.yi_textView_show1);
                     }
                 });
-        builder.create().show();
+        AlertDialog alertDialog = builder.create();
+        alertDialog.setCanceledOnTouchOutside(false);
+        alertDialog.show();
     }
     //    在开始之前提示服务正在运行中
     protected void before_start(){
-        if (presenter.getServiceStatus()){
+        if (presenter.getServiceStatus()||presenter.getReplyState()){
             AlertDialog.Builder builder = new AlertDialog.Builder(this).setTitle("提示").setMessage("服务正在进行中").setPositiveButton("知道了",null);
             builder.create().show();
         }

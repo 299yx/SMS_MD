@@ -37,7 +37,7 @@ public class ReplyService extends Service implements iPresenter{
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         reply = new ReplyService.Reply(new Handler());
-        getContentResolver().registerContentObserver(Uri.parse("content://sms"),false,reply);
+        getContentResolver().registerContentObserver(Uri.parse("content://sms"),true,reply);
         Toast.makeText(this,"短信自动回复功能开启",Toast.LENGTH_LONG).show();
         return START_NOT_STICKY;
     }

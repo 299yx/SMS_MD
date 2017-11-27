@@ -41,7 +41,7 @@ public class ListenService extends Service implements iPresenterService {
         modelService = new ModelService(getApplicationContext(),this);
         core();
         Toast.makeText(this,"自动转发服务已成功启动",Toast.LENGTH_SHORT).show();
-        return super.onStartCommand(intent, flags, startId);
+        return START_NOT_STICKY;
     }
 
     @Override
